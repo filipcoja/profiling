@@ -1,4 +1,6 @@
 .idea/
 *.o
 *.out
+*.out.*
+*.S
 venv/

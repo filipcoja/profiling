@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "util.h"
-
+#ifdef CUSTOM_INSTR
+    #include "libhelper.h"
+#endif
 #define SAMPLES 200
 #define SQUARE 200
 #define DIMS 2
@@ -55,25 +57,10 @@ void get_top_K_index(int top_indices[], int sample_x, int sample_y) {
         int x = X[i][0];
         int y = X[i][1];
 #ifdef CUSTOM_INSTR
-        int dist = 0;
-        int tmp;
-        __asm__  volatile (
-                "absd   %[z], %[x], %[y]\n\t"
-                : [z] "=r"(tmp)
-        : [x] "r"(x), [y] "r"(sample_x)
-        );
-        dist += tmp;
-        __asm__  volatile (
-                "absd   %[z], %[x], %[y]\n\t"
-                : [z] "=r"(tmp)
-        : [x] "r"(y), [y] "r"(sample_y)
-        );
-        dist += tmp;
+        int dist = absdsq(x, sample_x) + absdsq(y, sample_y);
 #else
         int dist = abs(x - sample_x) * abs(x - sample_x) + abs(y - sample_y) * abs(y - sample_y);
 #endif
-
-
         for (int j = 0; j < K; ++j) {
             if (dist < lowest_dist[j]) {
                 for (int l = K - 1; l > j; l--) {
