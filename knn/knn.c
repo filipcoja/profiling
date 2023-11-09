@@ -118,7 +118,7 @@ void predict(int X_sample[][DIMS], int n_X) {
     }
 }
 
-int main(void) {
+int main() {
     train();
 #ifndef MIRIV
     write_dataset();

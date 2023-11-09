@@ -1,4 +1,9 @@
 #!/bin/bash
+# ./compile => rv32im isa without custom instruction
+# ./compile custom => rv32im isa with and without custom instruction + compiled assembly
+# ./compile callgrind => x86 isa with callgrind.out file to check for profiling
+# ./compile miriv => rv32im isa with and without custom instruction for MiRiV CPU
+
 rm ./build/* -f
 
 if [ $# -eq 0 ]; then
@@ -19,6 +24,9 @@ elif [ $# -eq 1 ]; then
   elif [ $1 == miriv ]; then
     make -f Makefile.miriv
     mv *.mif ./build/
+    make -f Makefile.miriv custom
+    mv knn.dmem.mif ./build/knn_custom.dmem.mif
+    mv knn.imem.mif ./build/knn_custom.imem.mif
   fi
 fi
 
