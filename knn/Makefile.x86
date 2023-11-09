@@ -1,3 +1,4 @@
+# Compiling for x86 to profile with callgrind
 CC = gcc
 DEFS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_SVID_SOURCE -D_POSIX_C_SOURCE=200809L
 CFLAGS = -Wall -O3 -pg -std=c99 -pedantic $(DEFS)

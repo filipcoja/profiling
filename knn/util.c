@@ -1,4 +1,10 @@
 #include "util.h"
+#ifdef MIRIV
+    #include "libc.h"
+#else
+    #include <stdio.h>
+#endif
+
 int m_w = 0xFFFF2399;    /* must not be zero, nor 0x464fffff */
 int m_z = 0xFFFF9841;    /* must not be zero, nor 0x9068ffff */
 int get_random() {
@@ -35,4 +41,13 @@ void bubble_sort(int arr[], int n) {
         if (swapped == 0)
             break;
     }
+}
+void print_prediction(int prediction) {
+#ifdef MIRIV
+    putstring("Prediction: ");
+    putnumber(prediction);
+    putstring("\n");
+#else
+    printf("Prediction: %d \n", prediction);
+#endif
 }

@@ -1,0 +1,25 @@
+#!/bin/bash
+rm ./build/* -f
+
+if [ $# -eq 0 ]; then
+  make
+  mv knn ./build/
+elif [ $# -eq 1 ]; then
+  if [ $1 == custom ]; then
+    make custom
+    mv knn ./build/knn_custom
+    make
+    mv knn ./build/knn
+    riscv32-unknown-elf-objdump -d -M -f ./build/knn > ./build/unoptimized.S
+    riscv32-unknown-elf-objdump -d -M -f ./build/knn_custom > ./build/optimized.S
+  elif [ $1 == callgrind ]; then
+    make -f Makefile.x86
+    mv knn ./build/
+    valgrind --tool=callgrind --callgrind-out-file=./build/callgrind.out ./build/knn
+  elif [ $1 == miriv ]; then
+    make -f Makefile.miriv
+    mv *.mif ./build/
+  fi
+fi
+
+make clean

@@ -1,0 +1,46 @@
+# Compiling for MIRIV
+PREFIX=/opt/riscv-ddca/bin/riscv32-unknown-elf
+
+AS=${PREFIX}-as
+CC=${PREFIX}-gcc -march=rv32i
+LD=${PREFIX}-gcc -march=rv32i -nostartfiles -Wl,-N,-e,_start,-Ttext=0x40000000,--section-start,.rodata=4
+AR=${PREFIX}-ar
+OBJCOPY=${PREFIX}-objcopy
+CFLAGS = -Wall -O2 -pedantic $(DEFS)
+DEFS = -DMIRIV=1
+
+ifneq (,$(filter custom,$(MAKECMDGOALS)))
+	DEFS += -DCUSTOM_INSTR=1
+endif
+
+.PHONY: all clean custom knn
+
+all: knn clean_after
+custom: knn clean_after
+
+knn: knn.imem.mif knn.dmem.mif
+
+knn.elf: libc.a libhelper.o util.o crt0.o knn.o
+	${LD} $^ -L. -lc -o $@
+
+# util library is our libc
+libc.a: libc.o
+	${AR} rc $@ $^
+
+%.imem.hex : %.elf
+	${OBJCOPY} -j .text -O ihex $< $@
+
+%.dmem.hex : %.elf
+	${OBJCOPY} -R .text -O ihex $< $@
+
+%.mif : %.hex
+	./hex2mif.pl < $< > $@
+
+#%.o: %.c
+#	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean_after:
+	rm -rf *.o *.elf *.a
+
+clean:
+	rm -rf *.o *.elf *.a *.mif

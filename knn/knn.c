@@ -1,8 +1,14 @@
-#include <stdio.h>
-#include "util.h"
+#ifdef MIRIV
+    #include "libc.h"
+#else
+    #include <stdio.h>
+#endif
 #ifdef CUSTOM_INSTR
     #include "libhelper.h"
 #endif
+#include "util.h"
+
+
 #define SAMPLES 200
 #define SQUARE 200
 #define DIMS 2
@@ -28,6 +34,7 @@ void train() {
     }
 }
 
+#ifndef MIRIV
 void write_dataset() {
     FILE *fp = fopen("visualization/data.json", "wr");
     if (fp == NULL) return;
@@ -50,6 +57,7 @@ void write_dataset() {
     fprintf(fp, "]}");
     fclose(fp);
 }
+#endif
 
 void get_top_K_index(int top_indices[], int sample_x, int sample_y) {
     int lowest_dist[K] = {SQUARE, SQUARE, SQUARE};
@@ -75,7 +83,7 @@ void get_top_K_index(int top_indices[], int sample_x, int sample_y) {
     }
 }
 
-int get_majority_label(int top_indices[]) {
+int get_majority_label(const int top_indices[]) {
     int top_labels[K];
     for (int i = 0; i < K; ++i) {
         top_labels[i] = Y[top_indices[i]];
@@ -106,13 +114,15 @@ void predict(int X_sample[][DIMS], int n_X) {
         int top_indices[K];
         get_top_K_index(top_indices, X_sample[g][0], X_sample[g][1]);
         int result = get_majority_label(top_indices);
-        printf("Prediction: %d \n", result);
+        print_prediction(result);
     }
 }
 
 int main(void) {
     train();
+#ifndef MIRIV
     write_dataset();
+#endif
     int samples[][DIMS] = {{50,  50},
                            {150, 150}};
     predict(samples, 2);

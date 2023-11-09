@@ -2,5 +2,6 @@
 *.o
 *.out
 *.out.*
-*.S
+**/build/*
+!**/build/.gitkeep
 venv/
