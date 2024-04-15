@@ -3,6 +3,7 @@
 
 
 inline int absdsq(int val, int sample_val) {
+
     int tmp;
     __asm__ volatile (
             "absd   %[t], %[x], %[y]\n\t"
